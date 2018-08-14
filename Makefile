@@ -9,11 +9,13 @@ PILOSA_DOWNLOAD_URL ?= https://s3.amazonaws.com/build.pilosa.com/$(PILOSA_VERSIO
 
 all: test
 
-cover:
-	go test -cover -tags="fullcoverage" $(TESTFLAGS)
+cover: vendor
+	$(MAKE) start-pilosa
+	go test -cover -tags="fullcoverage" $(TESTFLAGS) -covermode=count -coverprofile=build/coverage.out
+	$(MAKE) stop-pilosa
 
 fast-cover:
-	go test -cover $(TESTFLAGS)
+	go test -cover -tags="nointegration" $(TESTFLAGS)
 
 generate:
 	# This ensures that we don't forget to change the package name if we copy the proto definition from pilosa in order to update it.
