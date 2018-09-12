@@ -47,7 +47,6 @@ gometalinter:
             --enable=gochecknoinits \
             --enable=gofmt \
             --enable=goimports \
-            --enable=ineffassign \
             --enable=misspell \
             --enable=vet \
             --exclude "^gopilosa_pbuf/.*\.go" \
