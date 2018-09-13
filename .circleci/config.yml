@@ -40,7 +40,7 @@ jobs:
       - run: |
           docker create -v /tls --name conf alpine:3.4 /bin/true
           docker cp build/. conf:/tls
-          docker run --volumes-from conf pilosa/pilosa:v1.1.0 --metric.diagnostics=false -b https://:20101 --tls.skip-verify --tls.certificate /tls/test.pilosa.local.crt --tls.key /tls/test.pilosa.local.key --cluster.disabled static
+          docker run --volumes-from conf pilosa/pilosa:v1.1.0 server --data-dir /data --metric.diagnostics=false --bind https://:20101 --tls.skip-verify --tls.certificate /tls/test.pilosa.local.crt --tls.key /tls/test.pilosa.local.key --cluster.disabled static
       - run: |
           docker create -v /go/src/github.com/pilosa/go-pilosa --name go-pilosa alpine:3.4 /bin/true
           docker cp . go-pilosa:/go/src/github.com/pilosa/go-pilosa
