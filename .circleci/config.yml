@@ -44,7 +44,7 @@ jobs:
       - run: |
           docker create -v /go/src/github.com/pilosa/go-pilosa --name go-pilosa alpine:3.4 /bin/true
           docker cp . go-pilosa:/go/src/github.com/pilosa/go-pilosa
-          docker run --volumes-from go-pilosa circleci/golang:1.10 --env PILOSA_BIND=https://:20101 --workdir /go/src/github.com/pilosa/go-pilosa make test-all
+          docker run --volumes-from go-pilosa --env PILOSA_BIND=https://:20101 --workdir /go/src/github.com/pilosa/go-pilosa circleci/golang:1.10 make test-all
     docker:
       - image: circleci/golang:1.10
       - image: pilosa/pilosa:v1.1.0
