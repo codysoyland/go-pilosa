@@ -34,6 +34,7 @@ jobs:
     <<: *defaults
     steps:
       - *fast-checkout
+      - run: mkdir build
       - run: make build/test.pilosa.local.key
       - setup_remote_docker
       - run: |
