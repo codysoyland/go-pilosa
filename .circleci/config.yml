@@ -34,7 +34,7 @@ jobs:
     <<: *defaults
     steps:
       - *fast-checkout
-      - make test-all
+      - run: make test-all
     docker:
       - image: circleci/golang:1.10
       - image: pilosa/pilosa:v1.1.0
