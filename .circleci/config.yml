@@ -48,7 +48,7 @@ jobs:
     steps:
       - *fast-checkout
       - run: make start-pilosa
-      - run: make cover
+      - run: make cover PILOSA_BIND=https://:20101
       - run: go get github.com/mattn/goveralls && /go/bin/goveralls -service=circle-ci -ignore "gopilosa_pbuf/public.pb.go" -coverprofile=build/coverage.out
       - run: make stop-pilosa
 workflows:
@@ -63,5 +63,8 @@ workflows:
           requires:
             - build
       - test-golang-1.9:
+          requires:
+            - build
+      - coverage:
           requires:
             - build

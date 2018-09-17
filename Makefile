@@ -5,7 +5,7 @@ PILOSA_VERSION_ID := pilosa-$(PILOSA_VERSION)-$(GOOS)-amd64
 PILOSA_DOWNLOAD_URL ?= https://s3.amazonaws.com/build.pilosa.com/$(PILOSA_VERSION_ID).tar.gz
 VERSION := $(shell git describe --tags 2> /dev/null || echo unknown)
 GOOS ?= linux
-PILOSA_BIND ?= https://:20101
+PILOSA_BIND ?= http://:10101
 
 all: test
 
