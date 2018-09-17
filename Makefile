@@ -1,5 +1,8 @@
 .PHONY: all cover fast-cover generate-proto test test-all test-all-race gometalinter
 
+PILOSA_VERSION ?= master
+PILOSA_VERSION_ID := pilosa-$(PILOSA_VERSION)-$(GOOS)-amd64
+PILOSA_DOWNLOAD_URL ?= https://s3.amazonaws.com/build.pilosa.com/$(PILOSA_VERSION_ID).tar.gz
 VERSION := $(shell git describe --tags 2> /dev/null || echo unknown)
 GOOS ?= linux
 PILOSA_BIND ?= https://:20101
@@ -7,10 +10,10 @@ PILOSA_BIND ?= https://:20101
 all: test
 
 cover: vendor
-	PILOSA_BIND=https://:20101 go test -cover -tags="fullcoverage" $(TESTFLAGS) -covermode=count -coverprofile=build/coverage.out
+	PILOSA_BIND=$(PILOSA_BIND) go test -cover -tags="fullcoverage" $(TESTFLAGS) -covermode=count -coverprofile=build/coverage.out
 
 fast-cover:
-	go test -cover -tags="nointegration" $(TESTFLAGS)
+	PILOSA_BIND=$(PILOSA_BIND) go test -cover -tags="nointegration" $(TESTFLAGS)
 
 generate:
 	# This ensures that we don't forget to change the package name if we copy the proto definition from pilosa in order to update it.
@@ -19,13 +22,13 @@ generate:
 	protoc --go_out=. gopilosa_pbuf/public.proto
 
 test: vendor
-	go test -tags=nointegration $(TESTFLAGS)
+	PILOSA_BIND=$(PILOSA_BIND) go test -tags=nointegration $(TESTFLAGS)
 
 test-all: vendor
-	go test $(TESTFLAGS)
+	PILOSA_BIND=$(PILOSA_BIND) go test $(TESTFLAGS)
 
 test-all-race: vendor
-	PILOSA_BIND=https://:20101 go test -race $(TESTFLAGS)
+	PILOSA_BIND=$(PILOSA_BIND) $(MAKE) test-all TESTFLAGS=-race
 
 vendor: Gopkg.toml
 	dep ensure -vendor-only
@@ -36,6 +39,14 @@ release:
 
 clean:
 	rm -rf build vendor
+
+start-pilosa: build/pilosa.pid
+
+stop-pilosa: build/pilosa.pid
+	kill `cat $<` && rm $< && rm -rf build/https_data
+
+build/pilosa.pid: build/$(PILOSA_VERSION_ID)/pilosa build/test.pilosa.local.key
+	build/$(PILOSA_VERSION_ID)/pilosa server --metric.diagnostics=false -b https://:20101 -d build/https_data --tls.skip-verify --tls.certificate build/test.pilosa.local.crt --tls.key build/test.pilosa.local.key --cluster.disabled static & echo $$! > $@
 
 build/test.pilosa.local.key:
 	openssl req -x509 -newkey rsa:4096 -keyout build/test.pilosa.local.key -out build/test.pilosa.local.crt -days 3650 -nodes -subj "/C=US/ST=Texas/L=Austin/O=Pilosa/OU=Com/CN=test.pilosa.local"
