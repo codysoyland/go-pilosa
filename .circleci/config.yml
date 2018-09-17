@@ -47,7 +47,7 @@ jobs:
     <<: *defaults
     steps:
       - *fast-checkout
-      - run: make start-pilosa GOOS=linux && make cover PILOSA_BIND=https://:20101
+      - run: make start-pilosa GOOS=linux && sleep 2 && make cover PILOSA_BIND=https://:20101
       - run: go get github.com/mattn/goveralls && /go/bin/goveralls -service=circle-ci -ignore "gopilosa_pbuf/public.pb.go" -coverprofile=build/coverage.out
 workflows:
   version: 2
