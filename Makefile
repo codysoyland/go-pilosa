@@ -10,7 +10,7 @@ PILOSA_BIND ?= http://:10101
 all: test
 
 cover: vendor
-	PILOSA_BIND=$(PILOSA_BIND) go test -cover -tags="fullcoverage" $(TESTFLAGS) -covermode=count -coverprofile=build/coverage.out
+	PILOSA_BIND=$(PILOSA_BIND) go test -cover $(TESTFLAGS) -covermode=count -coverprofile=build/coverage.out
 
 fast-cover:
 	PILOSA_BIND=$(PILOSA_BIND) go test -cover -tags="nointegration" $(TESTFLAGS)
